@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Pokemon, PokemonSpecies, PokemonData, FlavorTextEntry } from '../types/pokemon';
+import type { Pokemon, PokemonSpecies, PokemonData, FlavorTextEntry, EvolutionChain } from '../types/pokemon';
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
@@ -19,15 +19,17 @@ export class PokemonApiService {
     return response.data;
   }
 
-  static async getPokemonData(name: string): Promise<PokemonData> {
-    try {
-      const pokemon = await this.getPokemon(name);
-      const species = await this.getPokemonSpecies(pokemon.id);
-      
-      return {
-        pokemon,
-        species
-      };
+  static async getPokemonData(name: string): Promise<PokemonData & { evolutionChain: EvolutionChain }> {
+  try {
+    const pokemon = await this.getPokemon(name);
+    const species = await this.getPokemonSpecies(pokemon.id);
+    const evolutionChain = await this.getEvolutionChain(species.evolution_chain.url);
+
+    return {
+      pokemon,
+      species,
+      evolutionChain
+    };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
@@ -61,6 +63,10 @@ export class PokemonApiService {
 
     return 'Descripción no disponible';
   }
+  static async getEvolutionChain(url: string): Promise<EvolutionChain> {
+  const response = await axios.get(url);
+  return response.data;
+}
 
   static getSpanishName(species: PokemonSpecies): string {
     const spanishName = species.names.find(

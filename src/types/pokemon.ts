@@ -33,6 +33,9 @@ export interface PokemonSpecies {
   name: string;
   flavor_text_entries: FlavorTextEntry[];
   names: PokemonName[];
+  evolution_chain: {
+    url: string;
+  };
 }
 
 export interface FlavorTextEntry {
@@ -58,6 +61,20 @@ export interface PokemonName {
 export interface PokemonData {
   pokemon: Pokemon;
   species: PokemonSpecies;
+  evolutionChain: EvolutionChain; 
+}
+
+export interface EvolutionChain {
+  id: number;
+  chain: EvolutionNode;
+}
+
+export interface EvolutionNode {
+  species: {
+    name: string;
+    url: string;
+  };
+  evolves_to: EvolutionNode[];
 }
 
 export const TYPE_TRANSLATIONS: Record<string, string> = {
